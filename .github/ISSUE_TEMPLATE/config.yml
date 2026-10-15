@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / 使用问题
+    url: https://github.com/
+    about: Please start a Discussion instead of opening an issue / 使用问题请发 Discussion
+  - name: Read the README first / 先看 README
+    url: https://github.com/
+    about: Requirements, resource setup and troubleshooting are all documented there
