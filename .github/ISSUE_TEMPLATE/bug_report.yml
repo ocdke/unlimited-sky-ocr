@@ -1,0 +1,99 @@
+name: Bug report / 问题反馈
+description: Something isn't working — 有东西不正常
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Please attach the log file** — it answers most
+        questions before I have to ask.
+        感谢反馈，请**务必附上日志**，大部分问题看日志就能定位。
+
+        Log path / 日志位置: `%LOCALAPPDATA%\UnlimitedSkyOCR\dpg.log`
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened / 发生了什么
+      description: What did you expect, and what actually happened?
+      placeholder: |
+        I pressed Ctrl+Alt+Q and selected a region, but no translation appeared.
+        我按了 Ctrl+Alt+Q 框选了一块，但译文没出来。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / 复现步骤
+      placeholder: |
+        1. Open the app
+        2. Press Ctrl+Alt+1 for realtime
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log file / 日志内容
+      description: |
+        Paste the last ~50 lines of `%LOCALAPPDATA%\UnlimitedSkyOCR\dpg.log`.
+        粘贴日志最后 50 行左右。
+      render: text
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ocr-lang
+    attributes:
+      label: OCR language setting / 识别语言设置
+      options:
+        - Auto / 自动检测
+        - Chinese / 中文
+        - Japanese / 日语
+        - English / 英语
+        - Korean / 韩语
+        - Russian / 俄语
+        - Other / 其它
+    validations:
+      required: true
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Translation engine / 翻译引擎
+      options:
+        - Tencent / 腾讯
+        - Google / 谷歌
+        - DeepL
+        - Online LLM API / 在线大模型 API
+        - Local AI (Ollama) / 本地 AI
+        - Offline only / 仅离线
+        - None / 仅识别不翻译
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App version / 软件版本
+      description: Shown in the title bar, or the installer filename date.
+      placeholder: "1.0.0"
+
+  - type: input
+    id: system
+    attributes:
+      label: System / 系统环境
+      placeholder: "Windows 11 26200, Ryzen 7 7700, RTX 5060 8GB, 32GB RAM"
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot / 截图
+      description: Drag an image here if the problem is visual.
+      placeholder: Drag & drop / 拖拽图片到这里
+    validations:
+      required: false

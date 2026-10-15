@@ -1,0 +1,96 @@
+# ============================================================
+#  构建产物
+# ============================================================
+target/
+build/
+dist/
+*.pdb
+*.ilk
+*.exp
+*.obj
+
+# Flutter / Dart
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/build/
+app/windows/flutter/ephemeral/
+app/android/.gradle/
+app/android/app/debug/
+app/android/app/profile/
+app/android/app/release/
+app/android/local.properties
+.packages
+.pub-cache/
+.pub/
+*.dill
+
+# ============================================================
+#  模型与运行时 (体积大, 用 tools\fetch_resources.ps1 下载)
+# ============================================================
+/models/
+/runtime/
+app/models/
+*.onnx
+*.gguf
+ollama-models/
+
+# ============================================================
+#  工具链 (本地下载, 不入库)
+# ============================================================
+.tools/
+.flutter/
+.cargo/
+
+# ============================================================
+#  二进制产物
+#  注意: 下面排除的是**构建出来的** exe/dll, 图标要保留 —— 它们是小文件,
+#  而且 resources.rc / CMakeLists.txt / Runner.rc 直接引用它们。
+# ============================================================
+*.exe
+*.msi
+*.apk
+*.aab
+*.dylib
+*.so
+*.dll
+installer/resources.res
+
+!installer/app.ico
+!app/windows/runner/resources/app_icon.ico
+!assets/app.ico
+!assets/logo512.png
+!assets/logo512_dark.png
+
+# ============================================================
+#  IDE / 编辑器
+# ============================================================
+.vscode/
+.idea/
+*.iml
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================================
+#  运行期产物
+# ============================================================
+*.log
+logs/
+sky_config.json
+ai_config.json
+
+# ============================================================
+#  开发过程中的临时截图 (只保留 docs/screenshots/ 下精选的那几张)
+# ============================================================
+docs/*.png
+docs/*.jpg
+docs/*.txt
+
+# Android 相关 (本项目已专注 Windows, 这些是历史产物)
+docs/android/
+
+docs/android/
+

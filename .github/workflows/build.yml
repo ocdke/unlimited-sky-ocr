@@ -1,0 +1,132 @@
+name: Build & release / 构建与发布
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # ============================================================
+  #  Rust 内核: 格式 + 测试 + 构建
+  # ============================================================
+  core:
+    name: Rust core / Rust 内核
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: core
+
+      - name: Check formatting
+        working-directory: core
+        run: cargo fmt --all -- --check
+        continue-on-error: true
+
+      - name: Clippy
+        working-directory: core
+        run: cargo clippy --release -- -D warnings
+        continue-on-error: true
+
+      # 单元测试不需要模型文件 —— 只覆盖纯逻辑 (噪声过滤等)
+      - name: Run tests
+        working-directory: core
+        run: cargo test --release --lib
+
+      - name: Build release
+        working-directory: core
+        run: cargo build --release
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: dpg_core-dll
+          path: core/target/release/dpg_core.dll
+          if-no-files-found: error
+
+  # ============================================================
+  #  Flutter 界面: 静态检查 + 测试
+  # ============================================================
+  app:
+    name: Flutter app / Flutter 界面
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.7'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Analyze
+        working-directory: app
+        run: flutter analyze
+
+      - name: Test
+        working-directory: app
+        run: flutter test
+
+  # ============================================================
+  #  安装程序: 只做编译检查 (它依赖内核产物才能打包)
+  # ============================================================
+  installer:
+    name: Installer / 安装程序
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: installer
+
+      - name: Build
+        working-directory: installer
+        run: cargo build --release
+
+  # ============================================================
+  #  打标签时出一个 Release 草稿
+  #  注意: 这里只放安装器和源码, 不含模型 (体积和许可证原因)
+  # ============================================================
+  release:
+    name: Release draft / 发布草稿
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [core, app, installer]
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          body: |
+            > **首次运行前请阅读 [README](README.md)。**
+            > 模型文件不随仓库分发，需按「资源准备」一节自行下载。
+
+            See the [README](README.md) for setup instructions.
+            Model files are **not** bundled with the source — see "Resource setup".

@@ -1,0 +1,23 @@
+[package]
+name = "dpg-setup"
+version = "0.1.0"
+edition = "2021"
+description = "DPG 全屏 OCR 识别翻译 - 安装程序"
+
+[[bin]]
+name = "dpg-setup"
+path = "src/main.rs"
+
+[[bin]]
+name = "sky_uninstall"
+path = "src/bin/uninstall.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+panic = "abort"

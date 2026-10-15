@@ -1,0 +1,23 @@
+# 统一用 LF, 避免 Windows 上提交后 diff 到处都是整文件改动
+* text=auto eol=lf
+
+# Windows 专用文件保留 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 二进制
+*.png binary
+*.jpg binary
+*.ico binary
+*.onnx binary
+*.gguf binary
+*.dll binary
+*.exe binary
+*.so binary
+
+# 语言统计: 把生成物排除掉, GitHub 的语言占比才准
+app/windows/flutter/ephemeral/** linguist-vendored
+app/android/** linguist-vendored
+**/build/** linguist-generated
+**/target/** linguist-generated

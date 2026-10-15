@@ -1,0 +1,47 @@
+name: Feature request / 功能建议
+description: Suggest an idea — 想要什么功能
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature requests are welcome. Please describe the **problem** first, not
+        just the solution — it usually leads to a better implementation.
+        欢迎提建议。请先描述**遇到的问题**，而不只是解决方案，这样更容易做对。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve? / 想解决什么问题
+      placeholder: |
+        When I read Korean manhwa the auto-detect mode picks the wrong model...
+        看韩漫时自动检测选错模型……
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution / 期望的做法
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered / 考虑过的替代方案
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Which area? / 涉及哪部分
+      options:
+        - label: OCR / recognition — 识别
+        - label: Translation — 翻译
+        - label: Overlay / UI — 浮层与界面
+        - label: Hotkeys / tray / autostart — 热键、托盘、自启
+        - label: Installer — 安装程序
+        - label: Performance — 性能
+        - label: Build / tooling — 构建与工具
