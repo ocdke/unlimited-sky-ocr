@@ -32,6 +32,64 @@ if (-not (Test-Path $git)) { throw '找不到 git，请先安装 Git for Windows
 if (-not (Test-Path '.git')) { throw '当前目录不是 git 仓库，请先运行 git init' }
 
 Write-Host ''
+Say '=== 检查仓库地址 ===' 'Cyan'
+
+# ---- 0. 地址校验 ----
+# 最常见的错误是从浏览器地址栏直接复制，典型形态:
+#   https://github.com/用户名?tab=repositories/仓库名.git
+# 里面混进了 ?tab=... 这类页面参数, git 会解析成不存在的路径。
+if ($Repo -match '\?' -or $Repo -match '/repositories' -or $Repo -match '\s') {
+    Say '  ✗ 这个地址不是 git 仓库地址，是从浏览器地址栏复制来的页面链接。' 'Red'
+    Say "    你填的: $Repo" 'Red'
+    # 顺手猜一个正确的出来
+    $guess = $null
+    if ($Repo -match 'github\.com/([^/?]+)') { $user = $Matches[1] }
+    if ($Repo -match '([^/?]+?)(\.git)?$') { $repoName = $Matches[1] }
+    if ($user) {
+        Say ''
+        Say '    正确格式应该是：「用户名/仓库名」，例如：' 'Yellow'
+        Say "      https://github.com/$user/你的仓库名.git" 'Cyan'
+    }
+    throw '地址不合法'
+}
+
+$Repo = $Repo.TrimEnd('/')
+if ($Repo -notmatch '\.git$') { $Repo = "$Repo.git" }
+if ($Repo -notmatch '^https://') {
+    Say '  ✗ 只支持 https:// 开头的地址' 'Red'
+    throw '地址不合法'
+}
+Say "  ✓ 地址格式正常: $Repo" 'Green'
+
+# ---- 0b. 仓库到底存不存在 ----
+Say ''
+Say '=== 检查远程仓库是否存在 ===' 'Cyan'
+Say '  (国内网络访问 GitHub 较慢，最多等 30 秒)' 'DarkGray'
+$env:GIT_TERMINAL_PROMPT = '0'
+$probe = & $git ls-remote $Repo 2>&1
+$probeText = ($probe | Out-String)
+if ($LASTEXITCODE -ne 0) {
+    if ($probeText -match 'not found|Repository not found|403|401') {
+        Say '  ✗ 远程仓库不存在（或你没有权限）。' 'Red'
+        Say ''
+        Say '  请先在网页上建一个**空仓库**：' 'Yellow'
+        Say '    1. 打开 https://github.com/new' 'White'
+        Say '    2. Repository name 填仓库名（本仓库建议 unlimited-sky-ocr）' 'White'
+        Say '    3. ⚠️ 不要勾选 Add a README / .gitignore / license' 'Red'
+        Say '       （本地已经有提交了，勾了会产生冲突）' 'DarkGray'
+        Say '    4. 点 Create repository' 'White'
+        Say '    5. 然后重新运行本脚本' 'White'
+        throw '远程仓库不存在'
+    }
+    Say "  ! 探测失败（可能是网络问题）: $($probeText.Trim())" 'Yellow'
+    $go = Read-Host '  仍然继续推送? (y/N)'
+    if ($go -ne 'y') { throw '已取消' }
+}
+else {
+    Say '  ✓ 仓库存在且可访问' 'Green'
+}
+
+Write-Host ''
 Say '=== 推送前检查 ===' 'Cyan'
 
 # ---- 1. 工作区是否干净 ----
